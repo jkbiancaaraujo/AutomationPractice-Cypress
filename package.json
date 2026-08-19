@@ -1,0 +1,22 @@
+{
+  "name": "automationexercise-cypress",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Testes automatizados em BDD (Cypress + Cucumber) para o site https://www.automationexercise.com",
+  "scripts": {
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run"
+  },
+  "devDependencies": {
+    "@badeball/cypress-cucumber-preprocessor": "^26.0.0",
+    "@bahmutov/cypress-esbuild-preprocessor": "^2.2.2",
+    "@faker-js/faker": "^9.6.0",
+    "cypress": "^15.21.0",
+    "cypress-mochawesome-reporter": "^5.0.0",
+    "cypress-on-fix": "^1.1.0",
+    "dotenv": "^16.4.5"
+  },
+  "cypress-cucumber-preprocessor": {
+    "stepDefinitions": "cypress/e2e/step_definitions/**/*.{js,ts}"
+  }
+}

@@ -1,0 +1,22 @@
+node_modules/
+
+# Cypress artifacts
+cypress/videos/
+cypress/screenshots/
+cypress/downloads/
+cypress/results/
+cypress/reports/
+
+# Variáveis de ambiente / segredos - nunca versionar
+.env
+.env.local
+cypress.env.json
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# SO / editor
+.DS_Store
+.vscode/
