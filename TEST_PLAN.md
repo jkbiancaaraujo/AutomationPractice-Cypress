@@ -91,10 +91,11 @@ interface grafica - uma camada de teste mais rapida e menos fragil que a UI.
 | # | Cenario | Tipo |
 |---|---|---|
 | 5.1 | Consultar uma acao existente retorna o nome da lista associada | Funcional / **Smoke** |
+| 5.2 | Consultar uma acao com um id em formato invalido retorna erro | Excecao |
 
-**Total: 22 cenarios**, cobrindo os 4 fluxos criticos de UI do site (autenticacao,
-cadastro, busca e compra) mais 1 teste de API, com 5 deles marcados como smoke (um
-por suite).
+**Total: 23 cenarios**, cobrindo os 4 fluxos criticos de UI do site (autenticacao,
+cadastro, busca e compra) mais 2 testes de API (contrato + excecao), com 5 deles
+marcados como smoke (um por suite).
 
 ## 3. Arquitetura da automacao
 
@@ -118,7 +119,7 @@ Fluxo de responsabilidade: **feature (o que)** → **step definition (orquestrac
 | Suite | Quando usar | Cenarios |
 |---|---|---|
 | **Smoke** | Feedback rapido a cada push/PR, checagem de "esta tudo no ar" | 5 (um por fluxo, tag `@smoke`) |
-| **Regressivo** | Antes de releases, validacao completa de negocio | 22 (suite inteira) |
+| **Regressivo** | Antes de releases, validacao completa de negocio | 23 (suite inteira) |
 
 A filtragem por tag e feita pelo proprio `@badeball/cypress-cucumber-preprocessor`
 (`--env tags=@smoke`), sem necessidade de manter arquivos de teste duplicados. Comandos
@@ -148,5 +149,5 @@ de teste, nao na operacao do projeto.
 | Cadastro de usuario | 4 | ✅ 4/4 |
 | Busca de produtos | 4 | ✅ 4/4 |
 | Carrinho e checkout | 8 | ✅ 8/8 |
-| API - Trello | 1 | ✅ 1/1 |
-| **Total** | **22** | ✅ **22/22** |
+| API - Trello | 2 | ✅ 2/2 |
+| **Total** | **23** | ✅ **23/23** |

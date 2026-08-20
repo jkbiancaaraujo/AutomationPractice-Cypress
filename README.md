@@ -9,7 +9,7 @@ Projeto de testes end-to-end em **BDD (Gherkin)** para o site publico de pratica
 - ✅ Cenarios BDD escritos (`cypress/e2e/features/*.feature`)
 - ✅ Automacao completa (`cypress/e2e/step_definitions/`) usando Page Object Model
   (`cypress/support/pages/`)
-- ✅ 22/22 cenarios passando (suite completa, UI + API), com relatorio HTML e execucao em CI
+- ✅ 23/23 cenarios passando (suite completa, UI + API), com relatorio HTML e execucao em CI
 
 O raciocinio de planejamento por tras dos cenarios (escopo, estrategia de risco,
 rationale de BDD/POM/dados dinamicos) esta detalhado no [`TEST_PLAN.md`](./TEST_PLAN.md).
@@ -20,6 +20,7 @@ rationale de BDD/POM/dados dinamicos) esta detalhado no [`TEST_PLAN.md`](./TEST_
 - [@badeball/cypress-cucumber-preprocessor](https://github.com/badeball/cypress-cucumber-preprocessor) (BDD/Gherkin)
 - [@faker-js/faker](https://fakerjs.dev/) (massa de dados dinamica)
 - [cypress-mochawesome-reporter](https://github.com/LironEr/cypress-mochawesome-reporter) (relatorio HTML dos testes)
+- [ESLint](https://eslint.org/) + [eslint-plugin-cypress](https://github.com/cypress-io/eslint-plugin-cypress) + [Prettier](https://prettier.io/) (lint e formatacao)
 - Node.js + JavaScript
 
 ## Estrutura do projeto
@@ -167,12 +168,31 @@ falharem. A pasta `cypress/reports/` e recriada a cada execucao e nao e versiona
 > `cypress.config.js` para evitar conflito entre os hooks `before:run`/`after:run`
 > do preprocessor e do reporter.
 
+## Qualidade de codigo (lint/format)
+
+O projeto usa **ESLint** (com [eslint-plugin-cypress](https://github.com/cypress-io/eslint-plugin-cypress),
+incluindo a regra `cypress/unsafe-to-chain-command` que evita encadear acoes no meio
+de uma chain) e **Prettier** para manter o padrao de codigo consistente automaticamente,
+em vez de depender apenas de revisao manual:
+
+```bash
+npm run lint          # analisa o codigo
+npm run lint:fix      # corrige o que for autofixavel
+npm run format        # formata o codigo com Prettier
+npm run format:check  # so verifica, sem alterar (usado no CI)
+```
+
+Esses dois comandos rodam automaticamente no CI antes da suite de testes (job `lint`).
+
 ## CI (GitHub Actions)
 
-O workflow [`.github/workflows/cypress.yml`](./.github/workflows/cypress.yml) roda os
-testes em headless (Chrome): a suite **smoke** automaticamente em cada push/PR na
-branch `main`, ou a suite `smoke`/`regression` escolhida manualmente via
-`workflow_dispatch` (aba Actions).
+O workflow [`.github/workflows/cypress.yml`](./.github/workflows/cypress.yml) tem dois jobs:
+
+1. **`lint`**: roda `npm run lint` e `npm run format:check`. Se falhar, os testes nem chegam a rodar.
+2. **`cypress-run`** (depende do `lint`): roda a suite **smoke** automaticamente em
+   cada push/PR na branch `main`, ou a suite `smoke`/`regression` escolhida
+   manualmente via `workflow_dispatch` (aba Actions) — em **matriz cross-browser**
+   (`chrome` e `firefox`), headless.
 
 Antes de habilitar, cadastre os seguintes **Repository Secrets** em
 `Settings > Secrets and variables > Actions > New repository secret`:
@@ -186,18 +206,19 @@ Antes de habilitar, cadastre os seguintes **Repository Secrets** em
 
 O job:
 
-1. Faz checkout do codigo e instala o Node.js 20.
+1. Faz checkout do codigo e instala o Node.js 22.
 2. Decide qual script rodar (`test:smoke` ou `test:regression`, conforme o gatilho
-   ou a escolha no `workflow_dispatch`) e executa via `cypress-io/github-action`.
+   ou a escolha no `workflow_dispatch`) e executa via `cypress-io/github-action`,
+   uma vez por browser da matriz (`chrome`, `firefox`).
 3. Publica o relatorio HTML (`cypress/reports`) e, em caso de falha, os
-   screenshots (`cypress/screenshots`) como **artifacts** do workflow — disponiveis
-   para download na aba "Actions" do GitHub apos a execucao.
+   screenshots (`cypress/screenshots`) como **artifacts** do workflow — um por
+   browser, disponiveis para download na aba "Actions" do GitHub apos a execucao.
 
 
 ## Cenarios cobertos
 
-22 cenarios no total, cobrindo caminho feliz (`@funcional`) e casos de excecao/borda
-(`@excecao`) dos 4 fluxos criticos do site, mais 1 cenario de teste de API. O racional
+23 cenarios no total, cobrindo caminho feliz (`@funcional`) e casos de excecao/borda
+(`@excecao`) dos 4 fluxos criticos do site, mais 2 cenarios de teste de API. O racional
 de cada decisao de escopo esta no [`TEST_PLAN.md`](./TEST_PLAN.md#1-escopo-e-estrategia).
 
 ### Login (`login.feature`)
@@ -246,11 +267,13 @@ de cada decisao de escopo esta no [`TEST_PLAN.md`](./TEST_PLAN.md#1-escopo-e-est
 | # | Cenario | Tipo |
 |---|---|---|
 | 5.1 | Consultar uma acao existente retorna o nome da lista associada | Funcional / **Smoke** |
+| 5.2 | Consultar uma acao com um id em formato invalido retorna erro | Excecao |
 
-Cenario de teste de API (sem UI): envia um `GET` para
-`https://api.trello.com/1/actions/{id}`, valida o status code `200` da resposta e
-exibe (via `cy.log`) o conteudo do campo `name` dentro da estrutura `data.list` do
-corpo retornado.
+O cenario 5.1 (sem UI) envia um `GET` para `https://api.trello.com/1/actions/{id}`,
+valida o status code `200`, exibe (via `cy.log`) o campo `name` de `data.list` e
+confere o contrato da resposta (chaves obrigatorias, formato de `id`/`date`,
+estrutura de `list`/`board`/`card`). O cenario 5.2 valida que um id invalido retorna
+status `400`.
 
 ## Boas praticas seguidas neste projeto
 
@@ -259,3 +282,5 @@ corpo retornado.
 - Cenarios BDD escritos antes da automacao, validados via plano de testes.
 - Page Object Model: seletores e acoes isolados dos step definitions, evitando
   duplicacao de codigo entre cenarios.
+- ESLint + Prettier obrigatorios no CI antes de rodar os testes, garantindo padrao
+  de codigo sem depender so de revisao manual.

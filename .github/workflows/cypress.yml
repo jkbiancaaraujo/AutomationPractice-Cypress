@@ -16,7 +16,29 @@ on:
           - regression
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Lint (ESLint)
+        run: npm run lint
+
+      - name: Formatacao (Prettier)
+        run: npm run format:check
+
   cypress-run:
+    needs: lint
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
