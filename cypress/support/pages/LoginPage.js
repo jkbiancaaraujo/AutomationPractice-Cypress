@@ -1,3 +1,5 @@
+import { limparEDigitar } from './utils';
+
 class LoginPage {
   path = '/login';
 
@@ -6,8 +8,8 @@ class LoginPage {
   }
 
   preencherCredenciais(email, senha) {
-    cy.get('input[data-qa="login-email"]').clear().type(email);
-    cy.get('input[data-qa="login-password"]').clear().type(senha, { log: false });
+    limparEDigitar('input[data-qa="login-email"]', email);
+    limparEDigitar('input[data-qa="login-password"]', senha, { log: false });
   }
 
   clicarBotaoLogin() {
@@ -21,7 +23,7 @@ class LoginPage {
   loginComEnv() {
     this.visitar();
     this.preencherCredenciais(Cypress.env('userEmail'), Cypress.env('userPassword'));
-    cy.contains('button[data-qa="login-button"]', 'Login').click();
+    this.clicarBotaoLogin();
   }
 }
 

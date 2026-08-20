@@ -2,8 +2,10 @@ import { Given, When, Then } from '@badeball/cypress-cucumber-preprocessor';
 import { LoginPage, HeaderPage } from '../../support/pages';
 
 Given('que possuo uma conta previamente cadastrada e valida', () => {
-  expect(Cypress.env('userEmail'), 'CYPRESS_USER_EMAIL configurado no .env').to.be.a('string').and.not.be.empty;
-  expect(Cypress.env('userPassword'), 'CYPRESS_USER_PASSWORD configurado no .env').to.be.a('string').and.not.be.empty;
+  expect(Cypress.env('userEmail'), 'CYPRESS_USER_EMAIL configurado no .env').to.be.a('string').and
+    .not.be.empty;
+  expect(Cypress.env('userPassword'), 'CYPRESS_USER_PASSWORD configurado no .env').to.be.a('string')
+    .and.not.be.empty;
 });
 
 When('eu informo o e-mail e a senha corretos', () => {

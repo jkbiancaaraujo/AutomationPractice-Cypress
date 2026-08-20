@@ -9,7 +9,10 @@ When('eu pesquiso pelo termo {string}', function (termo) {
 When('eu pesquiso pelo termo {string} em letras maiusculas', function (termo) {
   ProdutosPage.pesquisar(termo);
   ProdutosPage.nomesDosProdutos().then(($els) => {
-    this.resultadoMaiusculas = Array.prototype.slice.call($els).map((el) => el.textContent.trim()).sort();
+    this.resultadoMaiusculas = Array.prototype.slice
+      .call($els)
+      .map((el) => el.textContent.trim())
+      .sort();
   });
 });
 
@@ -17,7 +20,10 @@ When('eu pesquiso pelo termo {string} em letras minusculas', function (termo) {
   ProdutosPage.visitar();
   ProdutosPage.pesquisar(termo);
   ProdutosPage.nomesDosProdutos().then(($els) => {
-    this.resultadoMinusculas = Array.prototype.slice.call($els).map((el) => el.textContent.trim()).sort();
+    this.resultadoMinusculas = Array.prototype.slice
+      .call($els)
+      .map((el) => el.textContent.trim())
+      .sort();
   });
 });
 
@@ -34,8 +40,13 @@ Then('pelo menos um produto retornado deve conter o termo pesquisado no nome', f
 
   ProdutosPage.nomesDosProdutos().should('have.length.greaterThan', 0);
   ProdutosPage.nomesDosProdutos().then(($els) => {
-    const algumRelevante = Array.prototype.slice.call($els).some((el) => el.textContent.toLowerCase().includes(termo));
-    expect(algumRelevante, `esperava ao menos um produto com "${termo}" no nome entre os resultados`).to.be.true;
+    const algumRelevante = Array.prototype.slice
+      .call($els)
+      .some((el) => el.textContent.toLowerCase().includes(termo));
+    expect(
+      algumRelevante,
+      `esperava ao menos um produto com "${termo}" no nome entre os resultados`
+    ).to.be.true;
   });
 });
 

@@ -1,3 +1,5 @@
+import { limparEDigitar } from './utils';
+
 class ProdutosPage {
   path = '/products';
 
@@ -6,7 +8,7 @@ class ProdutosPage {
   }
 
   pesquisar(termo) {
-    cy.get('#search_product').clear().type(termo);
+    limparEDigitar('#search_product', termo);
     cy.get('#submit_search').click();
   }
 

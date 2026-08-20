@@ -1,7 +1,13 @@
+import { limparEDigitar } from './utils';
+
 class CadastroPage {
   preencherDadosIniciais(nome, email) {
-    cy.get('input[data-qa="signup-name"]').clear().type(nome);
-    cy.get('input[data-qa="signup-email"]').clear().type(email);
+    limparEDigitar('input[data-qa="signup-name"]', nome);
+    limparEDigitar('input[data-qa="signup-email"]', email);
+  }
+
+  clicarBotaoSignup() {
+    cy.get('button[data-qa="signup-button"]').click({ force: true });
   }
 
   preencherContaCompleta(overrides = {}) {
@@ -28,14 +34,14 @@ class CadastroPage {
     cy.get('select[data-qa="days"]').select(dados.diaNascimento);
     cy.get('select[data-qa="months"]').select(dados.mesNascimento);
     cy.get('select[data-qa="years"]').select(dados.anoNascimento);
-    cy.get('input[data-qa="first_name"]').clear().type(dados.primeiroNome);
-    cy.get('input[data-qa="last_name"]').clear().type(dados.ultimoNome);
-    cy.get('input[data-qa="address"]').clear().type(dados.endereco);
+    limparEDigitar('input[data-qa="first_name"]', dados.primeiroNome);
+    limparEDigitar('input[data-qa="last_name"]', dados.ultimoNome);
+    limparEDigitar('input[data-qa="address"]', dados.endereco);
     cy.get('select[data-qa="country"]').select('India');
-    cy.get('input[data-qa="state"]').clear().type(dados.estado);
-    cy.get('input[data-qa="city"]').clear().type(dados.cidade);
-    cy.get('input[data-qa="zipcode"]').clear().type(dados.cep);
-    cy.get('input[data-qa="mobile_number"]').clear().type(dados.telefone);
+    limparEDigitar('input[data-qa="state"]', dados.estado);
+    limparEDigitar('input[data-qa="city"]', dados.cidade);
+    limparEDigitar('input[data-qa="zipcode"]', dados.cep);
+    limparEDigitar('input[data-qa="mobile_number"]', dados.telefone);
   }
 
   tituloDaPagina(texto) {

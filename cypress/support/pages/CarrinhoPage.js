@@ -22,9 +22,19 @@ class CarrinhoPage {
   }
 
   extrairValoresDaLinha($linha) {
-    const preco = parseFloat($linha.find('.cart_price p').text().replace(/[^\d.]/g, ''));
+    const preco = parseFloat(
+      $linha
+        .find('.cart_price p')
+        .text()
+        .replace(/[^\d.]/g, '')
+    );
     const quantidade = parseInt($linha.find('.cart_quantity button').text().trim(), 10);
-    const total = parseFloat($linha.find('.cart_total .cart_total_price').text().replace(/[^\d.]/g, ''));
+    const total = parseFloat(
+      $linha
+        .find('.cart_total .cart_total_price')
+        .text()
+        .replace(/[^\d.]/g, '')
+    );
     return { preco, quantidade, total };
   }
 

@@ -22,17 +22,23 @@ Then('a quantidade do produto deve ser igual a {int}', function (quantidade) {
   CarrinhoPage.quantidadeDoProduto(this.produtoAtual).should('contain', String(quantidade));
 });
 
-Then('o preco total do item deve ser igual ao preco unitario multiplicado pela quantidade', function () {
-  CarrinhoPage.linhaDoProduto(this.produtoAtual).then(($linha) => {
-    const { preco, quantidade, total } = CarrinhoPage.extrairValoresDaLinha($linha);
-    expect(total).to.eq(preco * quantidade);
-  });
-});
+Then(
+  'o preco total do item deve ser igual ao preco unitario multiplicado pela quantidade',
+  function () {
+    CarrinhoPage.linhaDoProduto(this.produtoAtual).then(($linha) => {
+      const { preco, quantidade, total } = CarrinhoPage.extrairValoresDaLinha($linha);
+      expect(total).to.eq(preco * quantidade);
+    });
+  }
+);
 
-Then('ambos os produtos {string} e {string} devem estar listados na tabela do carrinho', (produto1, produto2) => {
-  CarrinhoPage.linhaDoProduto(produto1).should('be.visible');
-  CarrinhoPage.linhaDoProduto(produto2).should('be.visible');
-});
+Then(
+  'ambos os produtos {string} e {string} devem estar listados na tabela do carrinho',
+  (produto1, produto2) => {
+    CarrinhoPage.linhaDoProduto(produto1).should('be.visible');
+    CarrinhoPage.linhaDoProduto(produto2).should('be.visible');
+  }
+);
 
 Then('o total geral do carrinho deve corresponder a soma dos totais de cada item', () => {
   CarrinhoPage.todasAsLinhas().each(($linha) => {
@@ -45,9 +51,12 @@ Then('eu devo ser direcionado para a pagina de checkout', () => {
   CheckoutPage.deveEstarNestaPagina();
 });
 
-Then('o produto {string} deve estar listado com a mesma quantidade e preco exibidos no carrinho', (nomeProduto) => {
-  CarrinhoPage.linhaDoProduto(nomeProduto).should('be.visible');
-});
+Then(
+  'o produto {string} deve estar listado com a mesma quantidade e preco exibidos no carrinho',
+  (nomeProduto) => {
+    CarrinhoPage.linhaDoProduto(nomeProduto).should('be.visible');
+  }
+);
 
 Then('o endereco de entrega e cobranca da minha conta deve ser exibido para conferencia', () => {
   CarrinhoPage.enderecoEntrega().should('be.visible');

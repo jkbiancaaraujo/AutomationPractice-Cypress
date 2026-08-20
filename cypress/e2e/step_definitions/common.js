@@ -1,6 +1,6 @@
 import { Given, When, Then } from '@badeball/cypress-cucumber-preprocessor';
 import 'cypress-mochawesome-reporter/cucumberSupport';
-import { LoginPage, ProdutosPage, HeaderPage } from '../../support/pages';
+import { LoginPage, CadastroPage, ProdutosPage, HeaderPage } from '../../support/pages';
 
 Given('que estou na pagina de login do AutomationExercise', () => {
   LoginPage.visitar();
@@ -15,16 +15,16 @@ Given('que estou autenticado com uma conta valida', () => {
   HeaderPage.estaLogado().should('be.visible');
 });
 
-const SELETORES_BOTOES_AMBIGUOS = {
-  Signup: 'button[data-qa="signup-button"]',
-  Login: 'button[data-qa="login-button"]',
+const ACOES_BOTOES_AMBIGUOS = {
+  Signup: () => CadastroPage.clicarBotaoSignup(),
+  Login: () => LoginPage.clicarBotaoLogin(),
 };
 
 When('eu clico no botao {string}', (texto) => {
-  const seletor = SELETORES_BOTOES_AMBIGUOS[texto];
+  const acao = ACOES_BOTOES_AMBIGUOS[texto];
 
-  if (seletor) {
-    cy.get(seletor).click({ force: true });
+  if (acao) {
+    acao();
     return;
   }
 

@@ -7,7 +7,11 @@
     "cypress:open": "cypress open",
     "cypress:run": "cypress run",
     "test:smoke": "cypress run --env tags=@smoke",
-    "test:regression": "cypress run"
+    "test:regression": "cypress run",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "devDependencies": {
     "@badeball/cypress-cucumber-preprocessor": "^26.0.0",
@@ -16,7 +20,11 @@
     "cypress": "^15.21.0",
     "cypress-mochawesome-reporter": "^5.0.0",
     "cypress-on-fix": "^1.1.0",
-    "dotenv": "^16.4.5"
+    "dotenv": "^16.4.5",
+    "eslint": "^10.8.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-cypress": "^7.0.0",
+    "prettier": "^3.9.6"
   },
   "cypress-cucumber-preprocessor": {
     "stepDefinitions": "cypress/e2e/step_definitions/**/*.{js,ts}",

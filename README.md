@@ -9,7 +9,7 @@ Projeto de testes end-to-end em **BDD (Gherkin)** para o site publico de pratica
 - ✅ Cenarios BDD escritos (`cypress/e2e/features/*.feature`)
 - ✅ Automacao completa (`cypress/e2e/step_definitions/`) usando Page Object Model
   (`cypress/support/pages/`)
-- ✅ 21/21 cenarios passando (suite completa), com relatorio HTML e execucao em CI
+- ✅ 22/22 cenarios passando (suite completa, UI + API), com relatorio HTML e execucao em CI
 
 O raciocinio de planejamento por tras dos cenarios (escopo, estrategia de risco,
 rationale de BDD/POM/dados dinamicos) esta detalhado no [`TEST_PLAN.md`](./TEST_PLAN.md).
@@ -32,15 +32,18 @@ automationexercise-cypress/
 │   │   │   ├── login.feature
 │   │   │   ├── cadastro-usuario.feature
 │   │   │   ├── busca-produtos.feature
-│   │   │   └── carrinho-checkout.feature
-│   │   └── step_definitions/      # Orquestracao dos steps (chamam os Page Objects)
+│   │   │   ├── carrinho-checkout.feature
+│   │   │   └── api-trello.feature
+│   │   └── step_definitions/      # Orquestracao dos steps (chamam os Page Objects/clients)
 │   │       ├── login.js
 │   │       ├── cadastro-usuario.js
 │   │       ├── busca-produtos.js
 │   │       ├── carrinho-checkout.js
+│   │       ├── api-trello.js
 │   │       └── common.js
 │   ├── support/
-│   │   ├── pages/                 # Page Objects: seletores + acoes de cada tela
+│   │   ├── pages/                 # Page Objects: seletores + acoes de cada tela (UI)
+│   │   ├── api/                   # Clients de API (ex.: TrelloApi)
 │   │   ├── factories/             # Geracao de massa de dados dinamica (UsuarioFactory)
 │   │   └── e2e.js                 # Bootstrap global (registro do reporter)
 │   └── reports/                   # Relatorio HTML gerado a cada execucao (git-ignored)
@@ -62,6 +65,10 @@ concentra os seletores e acoes de uma tela especifica:
 
 Isso mantem os cenarios de negocio desacoplados de detalhes de implementacao: se um
 seletor mudar no site, o ajuste fica isolado no Page Object correspondente.
+
+O mesmo principio se aplica a testes de API: o cenario `api-trello.feature` usa um
+**client de API** (`support/api/TrelloApi.js`) no lugar de um Page Object, encapsulando
+a chamada `cy.request` e mantendo o step definition livre de detalhes de URL/endpoint.
 
 ## Pre-requisitos
 
@@ -189,9 +196,9 @@ O job:
 
 ## Cenarios cobertos
 
-21 cenarios no total, cobrindo caminho feliz (`@funcional`) e casos de excecao/borda
-(`@excecao`) dos 4 fluxos criticos do site. O racional de cada decisao de escopo esta
-no [`TEST_PLAN.md`](./TEST_PLAN.md#1-escopo-e-estrategia).
+22 cenarios no total, cobrindo caminho feliz (`@funcional`) e casos de excecao/borda
+(`@excecao`) dos 4 fluxos criticos do site, mais 1 cenario de teste de API. O racional
+de cada decisao de escopo esta no [`TEST_PLAN.md`](./TEST_PLAN.md#1-escopo-e-estrategia).
 
 ### Login (`login.feature`)
 
@@ -233,6 +240,17 @@ no [`TEST_PLAN.md`](./TEST_PLAN.md#1-escopo-e-estrategia).
 | 4.6 | Remover um produto do carrinho | Funcional |
 | 4.7 | Remover o unico produto do carrinho exibe mensagem de carrinho vazio | Excecao |
 | 4.8 | Nao e possivel prosseguir para o checkout com o carrinho vazio | Excecao |
+
+### API - Trello (`api-trello.feature`)
+
+| # | Cenario | Tipo |
+|---|---|---|
+| 5.1 | Consultar uma acao existente retorna o nome da lista associada | Funcional / **Smoke** |
+
+Cenario de teste de API (sem UI): envia um `GET` para
+`https://api.trello.com/1/actions/{id}`, valida o status code `200` da resposta e
+exibe (via `cy.log`) o conteudo do campo `name` dentro da estrutura `data.list` do
+corpo retornado.
 
 ## Boas praticas seguidas neste projeto
 

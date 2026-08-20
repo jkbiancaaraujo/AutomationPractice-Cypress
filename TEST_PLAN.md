@@ -38,6 +38,11 @@ um unico lugar, sem tocar nos cenarios de negocio.
 gerados em tempo de execucao (`@faker-js/faker`), evitando testes frageis por colisao
 de e-mail ja cadastrado e eliminando qualquer dado sensivel versionado no repositorio.
 
+**Por que tambem um teste de API?** Alem dos fluxos de UI, a suite inclui um cenario
+de teste de API (`api-trello.feature`) contra um servico externo (Trello), cobrindo o
+contrato de resposta (status code e estrutura do payload) de forma independente da
+interface grafica - uma camada de teste mais rapida e menos fragil que a UI.
+
 ## 2. Cobertura de cenarios
 
 ### 2.1 Login (`login.feature`)
@@ -81,8 +86,15 @@ de e-mail ja cadastrado e eliminando qualquer dado sensivel versionado no reposi
 | 4.7 | Remover o unico produto do carrinho exibe mensagem de carrinho vazio | Excecao |
 | 4.8 | Nao e possivel prosseguir para o checkout com o carrinho vazio | Excecao |
 
-**Total: 21 cenarios**, cobrindo os 4 fluxos criticos do site (autenticacao, cadastro,
-busca e compra), com 4 deles marcados como smoke (um por suite).
+### 2.5 API - Trello (`api-trello.feature`)
+
+| # | Cenario | Tipo |
+|---|---|---|
+| 5.1 | Consultar uma acao existente retorna o nome da lista associada | Funcional / **Smoke** |
+
+**Total: 22 cenarios**, cobrindo os 4 fluxos criticos de UI do site (autenticacao,
+cadastro, busca e compra) mais 1 teste de API, com 5 deles marcados como smoke (um
+por suite).
 
 ## 3. Arquitetura da automacao
 
@@ -93,18 +105,20 @@ cypress/
 │   └── step_definitions/      # Codigo que conecta cada frase do Gherkin a uma acao
 └── support/
     ├── pages/                 # Page Objects: um arquivo por tela (seletores + acoes)
+    ├── api/                   # Clients de API (ex.: TrelloApi), equivalente ao POM para API
+    ├── factories/              # Geracao de massa de dados dinamica (UsuarioFactory)
     └── e2e.js                 # Bootstrap global (registro do reporter, etc.)
 ```
 
 Fluxo de responsabilidade: **feature (o que)** → **step definition (orquestracao)** →
-**page object (como)** → **Cypress commands (interacao real com o navegador)**.
+**page object / api client (como)** → **Cypress commands / cy.request (interacao real)**.
 
 ## 4. Estrategia de execucao: smoke x regressivo
 
 | Suite | Quando usar | Cenarios |
 |---|---|---|
-| **Smoke** | Feedback rapido a cada push/PR, checagem de "esta tudo no ar" | 4 (um por fluxo, tag `@smoke`) |
-| **Regressivo** | Antes de releases, validacao completa de negocio | 21 (suite inteira) |
+| **Smoke** | Feedback rapido a cada push/PR, checagem de "esta tudo no ar" | 5 (um por fluxo, tag `@smoke`) |
+| **Regressivo** | Antes de releases, validacao completa de negocio | 22 (suite inteira) |
 
 A filtragem por tag e feita pelo proprio `@badeball/cypress-cucumber-preprocessor`
 (`--env tags=@smoke`), sem necessidade de manter arquivos de teste duplicados. Comandos
@@ -134,4 +148,5 @@ de teste, nao na operacao do projeto.
 | Cadastro de usuario | 4 | ✅ 4/4 |
 | Busca de produtos | 4 | ✅ 4/4 |
 | Carrinho e checkout | 8 | ✅ 8/8 |
-| **Total** | **21** | ✅ **21/21** |
+| API - Trello | 1 | ✅ 1/1 |
+| **Total** | **22** | ✅ **22/22** |
