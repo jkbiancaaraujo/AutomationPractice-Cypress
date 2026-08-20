@@ -2,8 +2,6 @@ import { Given, When, Then } from '@badeball/cypress-cucumber-preprocessor';
 import 'cypress-mochawesome-reporter/cucumberSupport';
 import { LoginPage, ProdutosPage, HeaderPage } from '../../support/pages';
 
-// Steps reutilizados por mais de um arquivo .feature (evita definicoes duplicadas).
-
 Given('que estou na pagina de login do AutomationExercise', () => {
   LoginPage.visitar();
 });
@@ -17,8 +15,6 @@ Given('que estou autenticado com uma conta valida', () => {
   HeaderPage.estaLogado().should('be.visible');
 });
 
-// "Signup" e "Login" tambem aparecem no link do menu "Signup / Login" do cabecalho,
-// entao cy.contains(texto) por si so ambiguamente casaria com o link em vez do botao do formulario.
 const SELETORES_BOTOES_AMBIGUOS = {
   Signup: 'button[data-qa="signup-button"]',
   Login: 'button[data-qa="login-button"]',

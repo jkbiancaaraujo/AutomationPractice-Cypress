@@ -22,8 +22,6 @@ class CadastroPage {
 
     cy.get('#id_gender1').check({ force: true });
     cy.get('input[data-qa="password"]').clear();
-    // cy.type() nao aceita string vazia, entao so digita a senha quando ela for informada
-    // (usado pelo cenario que deixa o campo Password propositalmente em branco).
     if (dados.senha) {
       cy.get('input[data-qa="password"]').type(dados.senha, { log: false });
     }

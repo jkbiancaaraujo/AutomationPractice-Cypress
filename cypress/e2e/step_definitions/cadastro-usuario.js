@@ -1,12 +1,11 @@
 import { Given, When, Then } from '@badeball/cypress-cucumber-preprocessor';
-import { faker } from '@faker-js/faker';
 import { CadastroPage, HeaderPage } from '../../support/pages';
+import { UsuarioFactory } from '../../support/factories';
 
 When('eu informo um nome e um e-mail unicos gerados dinamicamente no formulario {string}', function (nomeFormulario) {
   cy.contains(nomeFormulario).should('be.visible');
 
-  const nome = faker.person.fullName();
-  const email = `qa.${Date.now()}.${faker.string.alphanumeric(6)}@example.com`;
+  const { nome, email } = UsuarioFactory.gerarNomeEEmail();
 
   CadastroPage.preencherDadosIniciais(nome, email);
   this.nomeGerado = nome;
@@ -20,16 +19,7 @@ Then('eu devo ser direcionado para a pagina {string}', (nomePagina) => {
 When('eu preencho as informacoes obrigatorias da conta com dados validos e dinamicos', function () {
   const [primeiroNome, ...resto] = this.nomeGerado.split(' ');
 
-  CadastroPage.preencherContaCompleta({
-    senha: `Senha!${faker.string.alphanumeric(6)}`,
-    primeiroNome,
-    ultimoNome: resto.join(' ') || 'Teste',
-    endereco: faker.location.streetAddress(),
-    estado: faker.location.state(),
-    cidade: faker.location.city(),
-    cep: faker.location.zipCode(),
-    telefone: faker.phone.number(),
-  });
+  CadastroPage.preencherContaCompleta(UsuarioFactory.gerarDadosDaConta(primeiroNome, resto.join(' ')));
 });
 
 Then('eu devo estar autenticado automaticamente', () => {
@@ -37,11 +27,12 @@ Then('eu devo estar autenticado automaticamente', () => {
 });
 
 Given('que ja existe uma conta cadastrada com um e-mail conhecido', () => {
+  expect(Cypress.env('userEmail'), 'CYPRESS_USER_EMAIL configurado no .env').to.be.a('string').and.not.be.empty;
 });
 
 When('eu informo um nome qualquer e o e-mail ja cadastrado no formulario {string}', function (nomeFormulario) {
   cy.contains(nomeFormulario).should('be.visible');
-  CadastroPage.preencherDadosIniciais(faker.person.fullName(), Cypress.env('userEmail'));
+  CadastroPage.preencherDadosIniciais(UsuarioFactory.gerarNomeEEmail().nome, Cypress.env('userEmail'));
 });
 
 When('eu clico no botao {string} sem preencher nome e e-mail', () => {

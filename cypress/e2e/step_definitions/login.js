@@ -2,7 +2,8 @@ import { Given, When, Then } from '@badeball/cypress-cucumber-preprocessor';
 import { LoginPage, HeaderPage } from '../../support/pages';
 
 Given('que possuo uma conta previamente cadastrada e valida', () => {
-  // Reutiliza a conta de teste configurada via variaveis de ambiente (.env).
+  expect(Cypress.env('userEmail'), 'CYPRESS_USER_EMAIL configurado no .env').to.be.a('string').and.not.be.empty;
+  expect(Cypress.env('userPassword'), 'CYPRESS_USER_PASSWORD configurado no .env').to.be.a('string').and.not.be.empty;
 });
 
 When('eu informo o e-mail e a senha corretos', () => {
@@ -23,8 +24,7 @@ Then('eu devo ser autenticado com sucesso', () => {
 });
 
 When('eu clico no botao {string} sem preencher e-mail e senha', () => {
-  // cy.contains('Login') ambiguamente casaria com o link "Signup / Login" do menu.
-  cy.get('button[data-qa="login-button"]').click({ force: true });
+  LoginPage.clicarBotaoLogin();
 });
 
 When('eu clico na opcao {string} do menu', (texto) => {

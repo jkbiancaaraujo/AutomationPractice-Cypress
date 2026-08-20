@@ -10,5 +10,5 @@ Page Objects em `cypress/support/pages` (`LoginPage`, `CadastroPage`, `ProdutosP
 `CarrinhoPage`, `CheckoutPage`, `HeaderPage`). Os step definitions apenas orquestram
 chamadas aos Page Objects e fazem as asserções do cenário — nenhum seletor de UI deve
 ficar hardcoded diretamente em um arquivo de step. Dados variaveis (nomes, e-mails,
-enderecos) sao gerados dinamicamente via `@faker-js/faker`, evitando duplicacao e dados
-fixos/sensiveis.
+enderecos) sao gerados dinamicamente via a `UsuarioFactory` em `cypress/support/factories`,
+que encapsula o uso do `@faker-js/faker`, evitando duplicacao e dados fixos/sensiveis.

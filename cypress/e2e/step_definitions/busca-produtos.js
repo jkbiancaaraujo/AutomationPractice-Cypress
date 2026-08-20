@@ -35,9 +35,6 @@ Then('pelo menos um produto retornado deve conter o termo pesquisado no nome', f
   ProdutosPage.nomesDosProdutos().should('have.length.greaterThan', 0);
   ProdutosPage.nomesDosProdutos().then(($els) => {
     const algumRelevante = Array.prototype.slice.call($els).some((el) => el.textContent.toLowerCase().includes(termo));
-    // A busca do site relaciona produtos tambem por categoria, entao nem todo
-    // resultado contem o termo literalmente no nome (ex: buscar "Top" tambem
-    // retorna "Little Girls Mr. Panda Shirt", da categoria Tops).
     expect(algumRelevante, `esperava ao menos um produto com "${termo}" no nome entre os resultados`).to.be.true;
   });
 });

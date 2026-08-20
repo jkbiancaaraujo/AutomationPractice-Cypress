@@ -26,8 +26,6 @@ class ProdutosPage {
     return cy.get('.productinfo p');
   }
 
-  // Fecha o modal "Added!" caso tenha ficado aberto de uma inclusao anterior,
-  // permitindo adicionar mais de um produto em sequencia na mesma listagem.
   fecharModalCarrinhoSeAberto() {
     cy.get('body').then(($body) => {
       if ($body.find('#cartModal.in, #cartModal.show').length > 0) {

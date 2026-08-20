@@ -7,11 +7,12 @@ Projeto de testes end-to-end em **BDD (Gherkin)** para o site publico de pratica
 ## Status atual
 
 - ✅ Cenarios BDD escritos (`cypress/e2e/features/*.feature`)
-- ✅ Plano de testes mapeando os cenarios (`TEST_PLAN.md`)
-- ⏳ **Automacao (step definitions) aguardando aprovacao do plano de testes**
+- ✅ Automacao completa (`cypress/e2e/step_definitions/`) usando Page Object Model
+  (`cypress/support/pages/`)
+- ✅ 21/21 cenarios passando (suite completa), com relatorio HTML e execucao em CI
 
-Nenhum step definition foi implementado ainda. Revise o [`TEST_PLAN.md`](./TEST_PLAN.md)
-antes de prosseguir com a automacao.
+O raciocinio de planejamento por tras dos cenarios (escopo, estrategia de risco,
+rationale de BDD/POM/dados dinamicos) esta detalhado no [`TEST_PLAN.md`](./TEST_PLAN.md).
 
 ## Stack
 
@@ -32,15 +33,35 @@ automationexercise-cypress/
 │   │   │   ├── cadastro-usuario.feature
 │   │   │   ├── busca-produtos.feature
 │   │   │   └── carrinho-checkout.feature
-│   │   └── step_definitions/      # Implementacao dos steps (a criar apos aprovacao)
-│   └── support/
-│       └── e2e.js                 # Suporte global / comandos customizados
+│   │   └── step_definitions/      # Orquestracao dos steps (chamam os Page Objects)
+│   │       ├── login.js
+│   │       ├── cadastro-usuario.js
+│   │       ├── busca-produtos.js
+│   │       ├── carrinho-checkout.js
+│   │       └── common.js
+│   ├── support/
+│   │   ├── pages/                 # Page Objects: seletores + acoes de cada tela
+│   │   ├── factories/             # Geracao de massa de dados dinamica (UsuarioFactory)
+│   │   └── e2e.js                 # Bootstrap global (registro do reporter)
+│   └── reports/                   # Relatorio HTML gerado a cada execucao (git-ignored)
+├── .github/workflows/cypress.yml  # Pipeline de CI (smoke / regressivo)
 ├── cypress.config.js
 ├── package.json
-├── TEST_PLAN.md                   # Plano de testes (mapeamento de cenarios)
+├── TEST_PLAN.md                   # Racional de planejamento dos testes
 ├── .env.example                   # Modelo de variaveis de ambiente
 └── .gitignore
 ```
+
+### Arquitetura da automacao (Page Object Model)
+
+Cada cenario Gherkin (`features/*.feature`) e implementado em um step definition que
+apenas orquestra chamadas a um **Page Object** (`support/pages/*.js`) — a classe que
+concentra os seletores e acoes de uma tela especifica:
+
+`feature (o que testar)` → `step definition (orquestracao)` → `page object (como interagir com a tela)`
+
+Isso mantem os cenarios de negocio desacoplados de detalhes de implementacao: se um
+seletor mudar no site, o ajuste fica isolado no Page Object correspondente.
 
 ## Pre-requisitos
 
@@ -168,23 +189,55 @@ O job:
 
 ## Cenarios cobertos
 
-Veja o detalhamento completo em [`TEST_PLAN.md`](./TEST_PLAN.md). Resumo:
+21 cenarios no total, cobrindo caminho feliz (`@funcional`) e casos de excecao/borda
+(`@excecao`) dos 4 fluxos criticos do site. O racional de cada decisao de escopo esta
+no [`TEST_PLAN.md`](./TEST_PLAN.md#1-escopo-e-estrategia).
 
-- **Login**: credenciais validas, senha incorreta, e-mail nao cadastrado, campos
-  obrigatorios em branco, logout.
-- **Cadastro de usuario**: cadastro com dados dinamicos, e-mail ja existente,
-  campos obrigatorios em branco, senha obrigatoria ausente.
-- **Busca de produtos**: termo existente e relevante, case-insensitive, termo sem
-  correspondencia, busca sem termo.
-- **Carrinho e checkout**: adicionar produto, validar produto/quantidade/total no
-  carrinho, multiplos produtos, checkout sem login, validacao dos produtos na tela
-  de checkout autenticado, remover produto do carrinho, carrinho vazio apos remocao
-  e bloqueio do checkout com carrinho vazio.
+### Login (`login.feature`)
+
+| # | Cenario | Tipo |
+|---|---|---|
+| 1.1 | Login com credenciais validas | Funcional / **Smoke** |
+| 1.2 | Login com senha incorreta | Excecao |
+| 1.3 | Login com e-mail nao cadastrado | Excecao |
+| 1.4 | Login com campos obrigatorios em branco | Excecao |
+| 1.5 | Logout de um usuario autenticado | Funcional |
+
+### Cadastro de usuario (`cadastro-usuario.feature`)
+
+| # | Cenario | Tipo |
+|---|---|---|
+| 2.1 | Cadastro de novo usuario com dados validos e dinamicos | Funcional / **Smoke** |
+| 2.2 | Cadastro com e-mail ja existente | Excecao |
+| 2.3 | Cadastro com campos obrigatorios (nome/e-mail) em branco | Excecao |
+| 2.4 | Finalizar cadastro sem preencher a senha obrigatoria | Excecao |
+
+### Busca de produtos (`busca-produtos.feature`)
+
+| # | Cenario | Tipo |
+|---|---|---|
+| 3.1 | Busca por termo existente retorna apenas produtos relevantes | Funcional / **Smoke** |
+| 3.2 | Busca e case-insensitive | Funcional |
+| 3.3 | Busca por termo sem correspondencia | Excecao |
+| 3.4 | Busca sem informar nenhum termo | Excecao |
+
+### Carrinho e checkout (`carrinho-checkout.feature`)
+
+| # | Cenario | Tipo |
+|---|---|---|
+| 4.1 | Adicionar um produto ao carrinho pela listagem | Funcional |
+| 4.2 | Validar produto e quantidade no carrinho apos inclusao | Funcional |
+| 4.3 | Adicionar multiplos produtos e validar todos no carrinho | Funcional |
+| 4.4 | Tentar finalizar checkout sem estar autenticado | Excecao |
+| 4.5 | Validar produtos do carrinho na tela de checkout autenticado | Funcional / **Smoke** |
+| 4.6 | Remover um produto do carrinho | Funcional |
+| 4.7 | Remover o unico produto do carrinho exibe mensagem de carrinho vazio | Excecao |
+| 4.8 | Nao e possivel prosseguir para o checkout com o carrinho vazio | Excecao |
 
 ## Boas praticas seguidas neste projeto
 
 - Sem credenciais ou dados sensiveis versionados (uso de `.env` + `.gitignore`).
 - Massa de dados dinamica via `@faker-js/faker` (sem usuarios/e-mails fixos).
 - Cenarios BDD escritos antes da automacao, validados via plano de testes.
-- Reuso de comandos customizados planejado para evitar duplicacao de codigo entre
-  step definitions (ver secao "Proximos passos" do `TEST_PLAN.md`).
+- Page Object Model: seletores e acoes isolados dos step definitions, evitando
+  duplicacao de codigo entre cenarios.
