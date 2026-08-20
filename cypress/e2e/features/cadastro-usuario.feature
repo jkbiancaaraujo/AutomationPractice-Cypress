@@ -8,7 +8,7 @@ Funcionalidade: Cadastro de novo usuario
   Contexto:
     Dado que estou na pagina de login do AutomationExercise
 
-  @funcional
+  @funcional @smoke
   Cenario: Cadastro de um novo usuario com dados validos e dinamicos
     Quando eu informo um nome e um e-mail unicos gerados dinamicamente no formulario "New User Signup!"
     E eu clico no botao "Signup"

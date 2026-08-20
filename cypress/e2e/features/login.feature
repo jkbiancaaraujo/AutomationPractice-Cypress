@@ -8,7 +8,7 @@ Funcionalidade: Login de usuario
   Contexto:
     Dado que estou na pagina de login do AutomationExercise
 
-  @funcional
+  @funcional @smoke
   Cenario: Login com credenciais validas
     Dado que possuo uma conta previamente cadastrada e valida
     Quando eu informo o e-mail e a senha corretos

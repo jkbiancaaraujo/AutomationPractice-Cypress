@@ -38,7 +38,7 @@ Funcionalidade: Carrinho de compras e validacao no checkout
     Entao a mensagem "Register / Login account to proceed on checkout." deve ser exibida
     E um link para a pagina de login deve ser oferecido
 
-  @funcional
+  @funcional @smoke
   Cenario: Validar os produtos do carrinho na tela de checkout estando autenticado
     Dado que estou autenticado com uma conta valida
     Quando eu adiciono o produto "Blue Top" ao carrinho a partir da listagem

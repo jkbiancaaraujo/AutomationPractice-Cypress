@@ -6,6 +6,14 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      suite:
+        description: "Suite a executar"
+        type: choice
+        default: regression
+        options:
+          - smoke
+          - regression
 
 jobs:
   cypress-run:
@@ -20,10 +28,20 @@ jobs:
           node-version: 20
           cache: npm
 
+      - name: Define comando de teste
+        id: suite
+        run: |
+          if [ "${{ github.event.inputs.suite || 'smoke' }}" = "regression" ]; then
+            echo "script=test:regression" >> "$GITHUB_OUTPUT"
+          else
+            echo "script=test:smoke" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:
           browser: chrome
+          command: npm run ${{ steps.suite.outputs.script }}
         env:
           CYPRESS_BASE_URL: ${{ secrets.CYPRESS_BASE_URL }}
           CYPRESS_USER_EMAIL: ${{ secrets.CYPRESS_USER_EMAIL }}

@@ -8,7 +8,7 @@ Funcionalidade: Busca de produtos
   Contexto:
     Dado que estou na pagina de produtos do AutomationExercise
 
-  @funcional
+  @funcional @smoke
   Cenario: Buscar por um termo existente retorna produtos relacionados
     Quando eu pesquiso pelo termo "Top"
     Entao a secao "Searched Products" deve ser exibida

@@ -89,7 +89,37 @@ npm run cypress:open
 
 # Modo headless (CI/terminal)
 npm run cypress:run
+
+# Suite smoke (cenarios tagueados com @smoke, um por feature)
+npm run test:smoke
+
+# Suite regressiva completa (todos os cenarios)
+npm run test:regression
 ```
+
+## Suites: smoke x regressivo
+
+Os cenarios "principais" de cada feature (o fluxo feliz mais representativo) estao
+marcados com a tag `@smoke` em `cypress/e2e/features/*.feature`, alem das tags
+`@funcional`/`@excecao` ja existentes.
+
+- **Smoke**: roda so os cenarios `@smoke` (um por suite), para uma validacao rapida
+  do fluxo principal. Local: `npm run test:smoke`. Equivale a
+  `cypress run --env tags=@smoke`.
+- **Regressivo**: roda a suite completa (todos os cenarios, incluindo os de excecao).
+  Local: `npm run test:regression` (ou `npm run cypress:run`).
+
+A filtragem de tags e feita pelo `@badeball/cypress-cucumber-preprocessor`
+(`filterSpecs`/`omitFiltered` configurados no `package.json`), que descarta antes da
+execucao qualquer spec sem cenarios correspondentes a tag pedida.
+
+No **GitHub Actions**, o mesmo workflow ([`.github/workflows/cypress.yml`](./.github/workflows/cypress.yml))
+cobre os dois fluxos:
+
+- Em `push`/`pull_request` para `main`, roda automaticamente a suite **smoke**
+  (feedback rapido).
+- Via **Actions → Cypress Tests → Run workflow** (`workflow_dispatch`), e possivel
+  escolher manualmente `smoke` ou `regression` no campo "Suite a executar".
 
 ## Relatorio de testes
 
@@ -111,9 +141,10 @@ falharem. A pasta `cypress/reports/` e recriada a cada execucao e nao e versiona
 
 ## CI (GitHub Actions)
 
-O workflow [`.github/workflows/cypress.yml`](./.github/workflows/cypress.yml) roda a suite
-completa em headless (Chrome) a cada push/PR na branch `main` (e manualmente via
-`workflow_dispatch`).
+O workflow [`.github/workflows/cypress.yml`](./.github/workflows/cypress.yml) roda os
+testes em headless (Chrome): a suite **smoke** automaticamente em cada push/PR na
+branch `main`, ou a suite `smoke`/`regression` escolhida manualmente via
+`workflow_dispatch` (aba Actions).
 
 Antes de habilitar, cadastre os seguintes **Repository Secrets** em
 `Settings > Secrets and variables > Actions > New repository secret`:
@@ -128,10 +159,12 @@ Antes de habilitar, cadastre os seguintes **Repository Secrets** em
 O job:
 
 1. Faz checkout do codigo e instala o Node.js 20.
-2. Instala dependencias e roda `cypress run` via `cypress-io/github-action`.
+2. Decide qual script rodar (`test:smoke` ou `test:regression`, conforme o gatilho
+   ou a escolha no `workflow_dispatch`) e executa via `cypress-io/github-action`.
 3. Publica o relatorio HTML (`cypress/reports`) e, em caso de falha, os
    screenshots (`cypress/screenshots`) como **artifacts** do workflow — disponiveis
    para download na aba "Actions" do GitHub apos a execucao.
+
 
 ## Cenarios cobertos
 
